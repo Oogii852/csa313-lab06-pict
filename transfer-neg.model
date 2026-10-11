@@ -1,0 +1,8 @@
+# transfer-neg.model: [ERROR] values are marked with ~
+From:     Valid, ~Frozen, ~Missing
+To:       Valid, ~Missing, ~SameAsFrom
+Amount:   Normal, ExactBalance, ~Zero, ~OverBalance, ~OverLimit
+Currency: Same, Different
+
+# if From is missing there is no balance, so ExactBalance is meaningless (no ~ inside constraints)
+IF [From] = "Missing" THEN [Amount] = "Normal";

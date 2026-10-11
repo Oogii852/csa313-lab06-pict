@@ -1,0 +1,11 @@
+# transfer.model: with the constraints from A2
+From:     Valid, Frozen, Missing
+To:       Valid, Missing, SameAsFrom
+Amount:   Normal, ExactBalance, Zero, OverBalance, OverLimit
+Currency: Same, Different
+
+# if From is missing, "To is the same as From" is meaningless
+IF [From] = "Missing" THEN [To] <> "SameAsFrom";
+# if From or To is missing, the amount checks are never reached (masked by priority)
+IF [From] = "Missing" THEN [Amount] = "Normal";
+IF [To] = "Missing" THEN [Amount] = "Normal";

@@ -1,0 +1,5 @@
+# transfer-nc.model: no constraints (all values from A1)
+From:     Valid, Frozen, Missing
+To:       Valid, Missing, SameAsFrom
+Amount:   Normal, ExactBalance, Zero, OverBalance, OverLimit
+Currency: Same, Different
