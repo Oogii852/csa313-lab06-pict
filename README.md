@@ -46,3 +46,27 @@
 - Хязгаарлалтын дараа: [ERROR] утга бүр бусад параметр нь энгийн утгатайгаа нэг л удаа орно (from-ийн 2 + to-ийн 2 + amount-ийн 3 = 7); [SINGLE] 1; алдаагүй утгуудын хослол from Valid × to Valid × amount Normal × currency {Same, Different} = 2. Нийт 7 + 1 + 2 = 10.
 
 **90 → 10**
+
+### A3. Спецификацийн хүснэгт
+
+Хүлээгдэх үр дүн: амжилт нь `201 {"result":"OK"}`, оролтын алдаа нь `200 {"result":"ERROR_..."}`. Давхар нөхцөлийн мөрийн үр дүнг дээрх давуу эрэмбээр (from → to → amount) гаргасан.
+
+| ID | from | to | amount | currency | Төрөл | Хүлээгдэх үр дүн |
+|---|---|---|---|---|---|---|
+| S01 | Valid | Valid | Normal | Same | happy path | 201 OK |
+| S02 | Valid | Valid | Normal | Different | happy path (хөрвүүлэлттэй) | 201 OK |
+| S03 | Valid | Valid | ExactBalance | Same | [SINGLE] хязгаар | 201 OK |
+| S04 | Missing | Valid | Normal | Same | [ERROR] | 200 ERROR_NO_FROM |
+| S05 | Frozen | Valid | Normal | Same | [ERROR] | 200 ERROR_FROZEN |
+| S06 | Valid | Missing | Normal | Same | [ERROR] | 200 ERROR_NO_TO |
+| S07 | Valid | SameAsFrom | Normal | Same | [ERROR] | 200 ERROR_SAME_ACCOUNT |
+| S08 | Valid | Valid | Zero | Same | [ERROR] | 200 ERROR_BAD_AMOUNT |
+| S09 | Valid | Valid | OverBalance | Same | [ERROR] | 200 ERROR_INSUFFICIENT |
+| S10 | Valid | Valid | OverLimit | Same | [ERROR] | 200 ERROR_LIMIT |
+| S11 | Missing | Missing | Normal | Same | давхар: from + to | 200 ERROR_NO_FROM (from нь to-оос өмнө) |
+| S12 | Frozen | SameAsFrom | Zero | Same | давхар: гурван алдаа | 200 ERROR_FROZEN (from нь to, amount-аас өмнө) |
+| S13 | Valid | Missing | OverBalance | Same | давхар: to + amount | 200 ERROR_NO_TO (to нь amount-аас өмнө) |
+| S14 | Valid | Valid | OverBalance ба OverLimit хоёуланг хэтэрсэн | Same | давхар: үлдэгдэл + лимит | 200 ERROR_INSUFFICIENT (үлдэгдэл нь лимитээс өмнө) |
+| S15 | Valid | Valid | OverBalance | Different | давхар: хөрвүүлэлт + алдаа | 200 ERROR_INSUFFICIENT (үлдэгдлийг хөрвүүлсний дараах дүнгээр шалгана) |
+
+Хамралт: happy path (S01, S02), [ERROR] анги бүр (S04–S10, 7 ангийн 7 мөр), [SINGLE] (S03), давхар нөхцөл (S11–S15). S11–S13 нь from → to → amount эрэмбийг, S14 нь дүнгийн доторх үлдэгдэл → лимит эрэмбийг, S15 нь ханшийн хөрвүүлэлтийг баталгаажуулна.
